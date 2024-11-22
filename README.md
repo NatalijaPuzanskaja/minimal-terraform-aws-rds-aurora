@@ -1,0 +1,1 @@
+# minimal-terraform-aws-rds-aurora
