@@ -1,74 +1,31 @@
-# Copyright (c) HashiCorp, Inc.
-# SPDX-License-Identifier: MPL-2.0
-
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "4.52.0"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "3.4.3"
-    }
-  }
-  required_version = ">= 1.1.0"
-}
-
 provider "aws" {
-  region = "eu-west-1"
-}
+  region = var.aws_region
 
-resource "random_pet" "sg" {}
-
-data "aws_ami" "ubuntu" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  owners = ["099720109477"] # Canonical
-}
-
-resource "aws_instance" "web" {
-  ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.web-sg.id]
-
-  user_data = <<-EOF
-              #!/bin/bash
-              apt-get update
-              apt-get install -y apache2
-              sed -i -e 's/80/8080/' /etc/apache2/ports.conf
-              echo "Hello World" > /var/www/html/index.html
-              systemctl restart apache2
-              EOF
-}
-
-resource "aws_security_group" "web-sg" {
-  name = "${random_pet.sg.id}-sg"
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  // connectivity to ubuntu mirrors is required to run `apt-get update` and `apt-get install apache2`
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+  default_tags {
+    tags = {
+      "account-name": var.aws_account_name
+    }
   }
 }
 
-output "web-address" {
-  value = "${aws_instance.web.public_dns}:8080"
+module "postgre-aurora" {
+  source                        = "./modules/postgre-aurora"
+  aws_region                    = var.aws_region
+
+  identifier                    = var.identifier
+  engine_version                = var.engine_version
+
+  deletion_protection           = var.deletion_protection
+
+  backup_retention_period       = var.backup_retention_period
+  preferred_backup_window       = var.preferred_backup_window
+
+  preferred_maintenance_window  = var.preferred_maintenance_window
+
+  pass_rotate_after_days        = var.pass_rotate_after_days
+
+  tags = {
+    role      = "aurora"
+    scheduled = true
+  }
 }
