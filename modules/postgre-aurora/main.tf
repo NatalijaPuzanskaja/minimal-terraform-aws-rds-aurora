@@ -308,13 +308,18 @@ resource "aws_security_group_rule" "this" {
 # Cluster Parameter Group
 ################################################################################
 
+data "aws_rds_engine_version" "family" {
+  engine  = var.engine
+  version = var.engine_version
+}
+
 resource "aws_rds_cluster_parameter_group" "this" {
   count = var.create_db_cluster_parameter_group ? 1 : 0
 
   name        = var.db_cluster_parameter_group_use_name_prefix ? null : local.cluster_parameter_group_name
   name_prefix = var.db_cluster_parameter_group_use_name_prefix ? "${local.cluster_parameter_group_name}-" : null
   description = var.db_cluster_parameter_group_description
-  family      = var.db_cluster_parameter_group_family
+  family      = data.aws_rds_engine_version.family.parameter_group_family
 
   dynamic "parameter" {
     for_each = var.db_cluster_parameter_group_parameters
@@ -343,7 +348,7 @@ resource "aws_db_parameter_group" "this" {
   name        = var.db_parameter_group_use_name_prefix ? null : local.db_parameter_group_name
   name_prefix = var.db_parameter_group_use_name_prefix ? "${local.db_parameter_group_name}-" : null
   description = var.db_parameter_group_description
-  family      = var.db_parameter_group_family
+  family      = data.aws_rds_engine_version.family.parameter_group_family
 
   dynamic "parameter" {
     for_each = var.db_parameter_group_parameters
