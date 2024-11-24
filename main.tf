@@ -11,9 +11,17 @@ provider "aws" {
 module "postgre-aurora" {
   source                        = "./modules/postgre-aurora"
   aws_region                    = var.aws_region
+  aws_account_name              = var.aws_account_name
 
+  name                          = var.name
   identifier                    = var.identifier
   engine_version                = var.engine_version
+  cluster_members               = var.cluster_members
+
+  vpc_id                        = data.aws_vpc.internal.id
+  subnet_ids                    = data.aws_subnets.internal.ids
+  db_subnet_group_name          = "${var.identifier}-subnet-group"
+  availability_zones            = data.aws_availability_zones.region.names
 
   deletion_protection           = var.deletion_protection
 

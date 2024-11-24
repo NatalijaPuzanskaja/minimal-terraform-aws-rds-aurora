@@ -10,15 +10,45 @@ variable "aws_account_name" {
   default     = null
 }
 
+variable "vpc_id" {
+  description = "ID of VPC"
+  type        = string
+  default     = null
+}
+
+variable "subnet_ids" {
+  description = "List of subnet IDs used by database subnet group created"
+  type        = list(string)
+  default     = []
+}
+
+variable "db_subnet_group_name" {
+  description = "The name of the subnet group name (existing or created)"
+  type        = string
+  default     = ""
+}
+
 variable "engine_version" {
   description = "The database engine version. Updating this argument results in an outage"
   type        = string
   default     = null
 }
 
+variable "name" {
+  description = "Name used across resources created"
+  type        = string
+  default     = ""
+}
+
 variable "identifier" {
   description = "A name for Aurora cluster"
   type        = string
+  default     = null
+}
+
+variable "cluster_members" {
+  description = "List of RDS Instances that are a part of this cluster"
+  type        = list(string)
   default     = null
 }
 
