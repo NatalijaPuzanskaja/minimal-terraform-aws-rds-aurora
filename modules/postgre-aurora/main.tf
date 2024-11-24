@@ -41,7 +41,7 @@ resource "aws_rds_cluster" "this" {
   availability_zones                  = var.availability_zones
   backup_retention_period             = var.backup_retention_period
   backtrack_window                    = var.backtrack_window
-  ca_certificate_identifier           = var.cluster_ca_cert_identifier
+
   cluster_identifier                  = lower(var.identifier)
   cluster_members                     = var.cluster_members
   copy_tags_to_snapshot               = var.copy_tags_to_snapshot
