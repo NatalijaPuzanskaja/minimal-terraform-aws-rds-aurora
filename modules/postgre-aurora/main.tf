@@ -66,6 +66,8 @@ resource "aws_rds_cluster" "this" {
   kms_key_id                            = var.kms_key_id
   manage_master_user_password           = var.manage_master_user_password ? var.manage_master_user_password : null
   master_user_secret_kms_key_id         = var.manage_master_user_password ? var.master_user_secret_kms_key_id : null
+  master_password                       = var.is_primary_cluster && !var.manage_master_user_password ? var.master_password : null
+  master_username                       = var.is_primary_cluster ? var.master_username : null
 
   port                                  = var.port
   preferred_backup_window               = var.preferred_backup_window

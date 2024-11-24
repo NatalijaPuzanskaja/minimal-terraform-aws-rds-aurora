@@ -279,7 +279,7 @@ variable "master_password" {
 variable "master_username" {
   description = "Username for the master DB user. Required unless `snapshot_identifier` or `replication_source_identifier` is provided or unless a `global_cluster_identifier` is provided when the cluster is the secondary cluster of a global database"
   type        = string
-  default     = null
+  default     = "postgres"
 }
 
 variable "network_type" {
