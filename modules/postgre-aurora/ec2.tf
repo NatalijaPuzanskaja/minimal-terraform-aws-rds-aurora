@@ -8,7 +8,7 @@ resource "aws_instance" "bastion_host" {
   subnet_id               = var.subnet_ids[1]
   vpc_security_group_ids  = aws_security_group.vpc_endpoint_sg.id
   iam_instance_profile    = aws_iam_instance_profile.bastion_host_instance_profile.name
-  user_data               = templatefile("ssm-agent-installer.sh", {})
+  user_data               = templatefile("ec2_ssm_agent_installer.sh", {})
   disable_api_termination = false
   metadata_options {
     http_endpoint = "enabled"
