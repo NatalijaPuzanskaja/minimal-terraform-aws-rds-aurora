@@ -22,9 +22,3 @@ output "subnet_ids_applied" {
   description = "AWS account internal subnet IDs in internal VPC"
   value       = module.postgre-aurora.aurora_cluster_subnet_ids
 }
-
-
-output "pass_rotate_after_days" {
-  description = "Debug: ensure module gets the pass_rotate_after_days variable"
-  value       = module.postgre-aurora.pass_rotate_after_days
-}

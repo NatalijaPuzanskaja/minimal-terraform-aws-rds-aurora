@@ -1,6 +1,8 @@
+data "aws_availability_zones" "available" {}
+data "aws_caller_identity" "current" {}
 data "aws_partition" "current" {}
 data "aws_region" "current" {}
-data "aws_caller_identity" "current" {}
+
 
 locals {
   account_id                      = var.aws_account_name != null ? var.aws_account_name : data.aws_caller_identity.current.account_id
@@ -19,6 +21,17 @@ resource "random_id" "snapshot_id" {
   byte_length = 4
 }
 
+resource "random_password" "db_master_pass" {
+  length            = 40
+  special           = true
+  min_special       = 5
+  override_special  = "!#$%^&*()-_=+[]{}<>:?"
+}
+
+resource "random_id" "id" {
+  byte_length = 8
+}
+
 ################################################################################
 # DB Subnet Group
 ################################################################################
@@ -29,6 +42,26 @@ resource "aws_db_subnet_group" "this" {
 
   tags = merge({"Name": var.db_subnet_group_name}, var.tags, var.db_subnet_group_tags)
 }
+
+################################################################################
+# DB Password
+################################################################################
+resource "aws_secretsmanager_secret" "db_pass" {
+  name = "db-pass-${random_id.id.hex}"
+}
+
+resource "aws_secretsmanager_secret_version" "db_pass_val" {
+  secret_id     = aws_secretsmanager_secret.db_pass.id
+  secret_string = jsonencode(
+    {
+      username = aws_rds_cluster.this[0].master_username
+      password = aws_rds_cluster.this[0].master_password
+      engine   = var.engine
+      host     = aws_rds_cluster.this[0].endpoint
+    }
+  )
+}
+
 
 ################################################################################
 # Cluster
@@ -66,7 +99,8 @@ resource "aws_rds_cluster" "this" {
   kms_key_id                            = var.kms_key_id
   manage_master_user_password           = var.manage_master_user_password ? var.manage_master_user_password : null
   master_user_secret_kms_key_id         = var.manage_master_user_password ? var.master_user_secret_kms_key_id : null
-  master_password                       = var.is_primary_cluster && !var.manage_master_user_password ? var.master_password : null
+#   master_password                       = var.is_primary_cluster && !var.manage_master_user_password ? var.master_password : null
+  master_password                       = random_password.db_master_pass.result
   master_username                       = var.is_primary_cluster ? var.master_username : null
 
   port                                  = var.port
@@ -176,6 +210,11 @@ resource "aws_rds_cluster_role_association" "this" {
   feature_name          = each.value.feature_name
   role_arn              = each.value.role_arn
 }
+
+################################################################################
+# DB IAM Roles
+################################################################################
+
 
 ################################################################################
 # Enhanced Monitoring
