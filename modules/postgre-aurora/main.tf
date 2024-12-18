@@ -54,10 +54,10 @@ resource "aws_secretsmanager_secret_version" "db_pass_val" {
   secret_id     = aws_secretsmanager_secret.db_pass.id
   secret_string = jsonencode(
     {
-      username = aws_rds_cluster.this.master_username
-      password = aws_rds_cluster.this.master_password
+      username = aws_rds_cluster.this[0].master_username
+      password = aws_rds_cluster.this[0].master_password
       engine   = var.engine
-      host     = aws_rds_cluster.this.endpoint
+      host     = aws_rds_cluster.this[0].endpoint
     }
   )
 }
@@ -214,22 +214,7 @@ resource "aws_rds_cluster_role_association" "this" {
 ################################################################################
 # DB IAM Roles
 ################################################################################
-locals {
-  create_rds_connect_role = var.create_monitoring_role && var.monitoring_interval > 0
-}
 
-data "aws_iam_policy_document" "rds_assume_role" {
-  count = local.create_monitoring_role ? 1 : 0
-
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["monitoring.rds.amazonaws.com"]
-    }
-  }
-}
 
 ################################################################################
 # Enhanced Monitoring

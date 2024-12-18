@@ -7,7 +7,7 @@ resource "aws_ssm_document" "rds_bootstrap_document" {
   document_type   = "Command"
   document_format = "YAML"
   content = templatefile("${path.module}/templates/rds_bootstrap_create_user.yml", {
-    dbhost = aws_rds_cluster.this.endpoint
+    dbhost = aws_rds_cluster.this[0].endpoint
     dbport = var.port
     dbname = var.database_name
     pguser = var.db_user
@@ -15,7 +15,7 @@ resource "aws_ssm_document" "rds_bootstrap_document" {
 }
 
 data "aws_secretsmanager_secret_version" "rds_db_user_secret" {
-    secret_id = aws_rds_cluster.this.master_user_secret[0].secret_arn
+    secret_id = aws_rds_cluster.this[0].master_user_secret[0].secret_arn
 }
 
 resource "null_resource" "run_rds_user_bootstrap" {

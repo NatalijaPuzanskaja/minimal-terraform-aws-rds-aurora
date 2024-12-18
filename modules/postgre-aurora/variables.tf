@@ -667,7 +667,7 @@ variable "vpc_id" {
   default     = ""
 }
 
-variable "vpc_cidr_blocks" {
+variable "vpc_cidr_block" {
   description = "VPC Cidr block"
   type        = string
   default     = ""
