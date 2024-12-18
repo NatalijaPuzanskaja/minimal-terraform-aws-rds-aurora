@@ -19,7 +19,7 @@ module "postgre-aurora" {
   cluster_members               = var.cluster_members
 
   vpc_id                        = data.aws_vpc.internal.id
-  vpc_cidr_blocks               = data.aws_vpc.internal.cidr_block
+  vpc_cidr_block                = data.aws_vpc.internal.cidr_block
   subnet_ids                    = data.aws_subnets.internal.ids
   db_subnet_group_name          = "${var.identifier}-subnet-group"
   availability_zones            = data.aws_availability_zones.region.names
