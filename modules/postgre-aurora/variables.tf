@@ -129,7 +129,7 @@ variable "copy_tags_to_snapshot" {
 variable "database_name" {
   description = "Name for an automatically created database on cluster creation"
   type        = string
-  default     = null
+  default     = "postgres"
 }
 
 variable "db_cluster_instance_class" {
@@ -261,7 +261,8 @@ variable "kms_key_id" {
 variable "manage_master_user_password" {
   description = "Set to true to allow RDS to manage the master user password in Secrets Manager. Cannot be set if `master_password` is provided"
   type        = bool
-  default     = true
+  # TODO: turn off managed password, change to true when done
+  default     = false
 }
 
 variable "master_user_secret_kms_key_id" {
@@ -501,6 +502,16 @@ variable "iam_roles" {
 }
 
 ################################################################################
+# DB Users
+################################################################################
+
+variable "db_user" {
+  description = "PostgreSQL database user"
+  type        = list(string)
+  default     = "admin"
+}
+
+################################################################################
 # Enhanced Monitoring
 ################################################################################
 
@@ -652,6 +663,12 @@ variable "security_group_description" {
 
 variable "vpc_id" {
   description = "ID of the VPC where to create security group"
+  type        = string
+  default     = ""
+}
+
+variable "vpc_cidr_blocks" {
+  description = "VPC Cidr block"
   type        = string
   default     = ""
 }
@@ -893,4 +910,14 @@ variable "monitoring_role_tags" {
   description = "Additional tags for monitoring role"
   type        = map(string)
   default     = {}
+}
+
+################################################################################
+# Bastion Host
+################################################################################
+
+variable "ec2_ami" {
+  description = ""
+  type        = string
+  default     = null
 }
