@@ -1,3 +1,4 @@
+# TODO: not used by the pipeline. Refer to test.auto.tfvars instead
 # AWS parameters
 aws_region                    = "eu-west-1"
 aws_account_name              = "personal-natalija"

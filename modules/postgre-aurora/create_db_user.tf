@@ -15,7 +15,7 @@ resource "aws_ssm_document" "rds_bootstrap_document" {
 }
 
 data "aws_secretsmanager_secret_version" "rds_db_user_secret" {
-    secret_id = aws_rds_cluster.this[0].master_user_secret[0].secret_arn
+  secret_id = aws_secretsmanager_secret.db_pass.id
 }
 
 resource "null_resource" "run_rds_user_bootstrap" {
