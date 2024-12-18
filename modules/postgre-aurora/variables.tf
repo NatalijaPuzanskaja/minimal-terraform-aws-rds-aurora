@@ -507,7 +507,7 @@ variable "iam_roles" {
 
 variable "db_user" {
   description = "PostgreSQL database user"
-  type        = list(string)
+  type        = string
   default     = "admin"
 }
 
