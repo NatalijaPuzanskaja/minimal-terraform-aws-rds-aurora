@@ -6,7 +6,7 @@ resource "aws_ssm_document" "rds_bootstrap_document" {
   name            = "db_user"
   document_type   = "Command"
   document_format = "YAML"
-  content = templatefile("${path.module}/templates/rds_bootstrap_create_user.yml", {
+  content = templatefile("${path.module}/templates/create_db_user.yml", {
     dbhost = aws_rds_cluster.this[0].endpoint
     dbport = var.port
     dbname = var.database_name

@@ -6,7 +6,7 @@ resource "aws_instance" "bastion_host" {
   ami                     = var.ec2_ami
   instance_type           = "t3.nano"
   subnet_id               = var.subnet_ids[1]
-  vpc_security_group_ids  = aws_security_group.vpc_endpoint_sg.ids
+  vpc_security_group_ids  = aws_security_group.vpc_endpoint_sg.id
   iam_instance_profile    = aws_iam_instance_profile.bastion_host_instance_profile.name
   user_data               = templatefile("ssm-agent-installer.sh", {})
   disable_api_termination = false
